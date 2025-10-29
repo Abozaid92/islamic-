@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat helper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./navbar.css">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png" />
+
+    <!-- أيقونة لأجهزة أبل -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png" />
+
+    <!-- أيقونة لأندرويد -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png" />
+
+
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --panel: #ffffff;
+            --muted: #9aa0a6;
+            --primary: #0b69ff;
+            --accent: #eef4ff;
+            --sidebar: #111217;
+            --sidebar-item: #1b1c21;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Cairo", Arial, sans-serif;
+            background: var(--bg);
+            color: #0b0b0b;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .containe {
+            display: flex;
+            align-items: stretch;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar);
+            color: #fff;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .brand {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .brand h1 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .new-chat-btn {
+            background: linear-gradient(180deg, var(--primary), #0060d6);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 6px 14px rgba(11, 105, 255, 0.12);
+        }
+
+        .chat-list {
+            overflow: auto;
+            flex: 1;
+            padding-right: 4px;
+            margin-top: 6px;
+        }
+
+        .chat-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--sidebar-item);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-size: 14px;
+            color: #e6e6e6;
+        }
+
+        .chat-item.active {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+        }
+
+        .chat-item .title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* MAIN PANEL */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            max-width: calc(100% - 260px);
+        }
+
+        .header {
+            height: 64px;
+            background: var(--panel);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(11, 11, 11, 0.04);
+            box-shadow: 0 1px 0 rgba(11, 11, 11, 0.02);
+        }
+
+        .chat-title {
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .main-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: linear-gradient(180deg, #fafbff, #fbfdff);
+            padding-bottom: 0;
+        }
+
+        /* chat-box: الوعاء اللي فيه الرسائل */
+        .chat-box {
+            position: relative;
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scroll-behavior: smooth;
+            min-height: 0;
+        }
+
+        /* الرسائل */
+        .message {
+            max-width: 72%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            line-height: 1.6;
+            font-size: 14px;
+            word-wrap: break-word;
+            box-shadow: 0 6px 18px rgba(15, 15, 15, 0.02);
+            background-clip: padding-box;
+            position: relative;
+            /* مهم حتى توضع pseudo elements بالنسبة للرسالة */
+        }
+
+        /* بوت */
+        .message.bot {
+            background: #eef1f6;
+            color: #0b0b0b;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+            padding-left: 16px;
+            /* reveal animation */
+            clip-path: inset(0 0 0 0);
+            animation: revealText 700ms ease-out;
+        }
+
+        /* يوزر */
+        .message.user {
+            background: linear-gradient(180deg, var(--primary), #0060d6);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* composer */
+        .composer {
+            padding: 14px;
+            background: var(--panel);
+            border-top: 1px solid rgba(11, 11, 11, 0.04);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: #f7f8fb;
+            border-radius: 999px;
+            padding: 10px 14px;
+            border: 1px solid rgba(11, 11, 11, 0.04);
+        }
+
+        .input input {
+            border: 0;
+            outline: 0;
+            background: transparent;
+            flex: 1;
+            font-size: 14px;
+            padding: 6px 8px;
+            color: #0b0b0b;
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 0;
+            background: var(--primary);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(11, 105, 255, 0.12);
+        }
+
+        .send-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* reveal animation for bot messages */
+        @keyframes revealText {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* responsive tweaks kept */
+        .chat-list::-webkit-scrollbar,
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-list::-webkit-scrollbar-thumb,
+        .chat-box::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 6px;
+        }
+
+        .mobile-actions {
+            display: none;
+        }
+
+        .mobile-actions button {
+            border: 0;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--primary);
+            color: #fff;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-actions button:active {
+            transform: translateY(1px);
+        }
+
+        /* show mobile-actions on tablet+mobile (changed breakpoint to include tablets) */
+        @media (max-width:1024px) {
+            .sidebar {
+                /* switch to slide-in overlay on smaller screens instead of hard hiding */
+                position: fixed;
+                left: -300px;
+                /* hidden by default */
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+                display: flex;
+                z-index: 60;
+                transition: left 240ms ease-in-out;
+                width: 260px;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+                overflow: auto;
+                background: var(--sidebar);
+            }
+
+            /* when opened */
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main {
+                max-width: 100%;
+            }
+
+            .chat-box {
+                min-height: 0;
+            }
+
+            .composer {
+                position: sticky;
+                bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+                z-index: 30;
+            }
+
+            .mobile-actions {
+                display: flex;
+                gap: 10px;
+                padding: 8px;
+                background: var(--panel);
+                border-top: 1px solid rgba(11, 11, 11, 0.04);
+                justify-content: space-between;
+                position: sticky;
+                bottom: 0;
+                z-index: 25;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .mobile-actions button {
+                flex: 1;
+                margin: 0 4px;
+            }
+
+            .mobile-actions button.delete {
+                background: transparent;
+                color: #0b0b0b;
+                border: 1px solid rgba(11, 11, 11, 0.08);
+            }
+
+            .main-body {
+                padding-bottom: calc(45px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
+        /* overlay that appears under the sidebar on mobile/tablet */
+        #sb-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.36);
+            z-index: 55;
+            display: none;
+        }
+
+        #sb-overlay.visible {
+            display: block;
+        }
+
+        /* =========================
+           TYPING INDICATOR AFTER LAST USER MESSAGE
+           ========================= */
+
+        /* مسافة قارئة تحت الرسالة عشان الفقاعة متغطاش */
+        .message.user:last-child {
+            margin-bottom: 56px;
+            /* يترك مساحة كافية لظهور فقاعة النقاط */
+        }
+
+        /* الفقاعة (container) — نستخدم ::after */
+        .message.user:last-child::after {
+            content: "";
+            position: absolute;
+            left: -6px;
+            /* لو عايز تحركها للوسط/يمين عدل القيمة */
+            bottom: -46px;
+            /* المسافة تحت الرسالة */
+            width: 92px;
+            height: 40px;
+            background: #eef1f6;
+            border-radius: 12px;
+            box-shadow: 0 8px 22px rgba(15, 15, 15, 0.06);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* النقاط داخل الفقاعة — ننشئ نقطة واحدة ونكررها باستخدام box-shadow */
+        .message.user:last-child::before {
+            content: "";
+            position: absolute;
+            left: 18px;
+            /* داخل الفقاعة: 18px من طرف الرسالة */
+            bottom: -38px;
+            /* قليلاً أعلى من ::after ليكون في منتصف الفقاعة عمودياً */
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            box-shadow: 14px 0 0 var(--muted), 28px 0 0 var(--muted);
+            animation: dotsPulse 1s infinite ease-in-out;
+            z-index: 11;
+            pointer-events: none;
+        }
+
+        @keyframes dotsPulse {
+            0% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateY(-3px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+        }
+
+        /* لو عندك مشاكل مع تداخل الفقاعة مع الـ composer على بعض الشاشات، قلّي أزود margin-bottom أو أبدّل موقع الفقاعة يمين/يسار */
+    </style>
+</head>
+
+<!-- nav -->
+<nav>
+    <div class="logo"><img src="./image/logo_resized.png" alt=""></div>
+    <input type="checkbox" id="checkbox">
+    <label for="checkbox" id="icon">
+        <svg fillش="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </label>
+    <ul>
+        <li><a href="./index.html">Prayer Time</a></li>
+        <li><a href="./quran.html"> Quran Player</a></li>
+        <li><a href="./write.html">the Quran written</a></li>
+        <li><a href="./pop.html">Hisn Almuslim</a></li>
+        <li><a href="./chat.html" class="active">Chat helper</a></li>
+    </ul>
+</nav>
+
+<body>
+    <div class="containe">
+        <div class="sidebar" aria-label="الشريط الجانبي">
+            <div class="brand">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                    <rect width="24" height="24" rx="6" fill="#0b69ff" />
+                    <path d="M7 12h10M7 8h10M7 16h6" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div>
+                    <h1>Chat helper</h1>
+                </div>
+            </div>
+
+            <div class="new-chat-btn" onclick="startNewChat()">➕ محادثة جديدة</div>
+
+            <div style="font-size:13px;color:rgba(255,255,255,0.65);padding:6px 0 4px 0">سجل المحادثات</div>
+            <div class="chat-list" id="chat-list" role="list"></div>
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+                <button class="icon-btn" title="مسح كل السجل" onclick="clearAllChats()">🗑️</button>
+                <div style="flex:1"></div>
+                <button class="icon-btn" title="تحديث" onclick="renderChatList()">⟳</button>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="header">
+                <div class="chat-title" id="current-title">محادثة جديدة</div>
+                <div class="controls">
+                    <button class="icon-btn" title="حذف المحادثة الحالية" onclick="deleteCurrentChat()">🗑️</button>
+                </div>
+            </div>
+
+            <div class="main-body">
+                <div class="chat-box" id="chat-box" role="log" aria-live="polite"></div>
+
+                <div class="composer">
+                    <div class="input">
+                        <input id="user-input" type="text" placeholder="اكتب رسالتك..." aria-label="اكتب رسالة" />
+                    </div>
+                    <button class="send-btn" onclick="sendMessage()" title="إرسال">➤</button>
+                </div>
+
+                <!-- mobile / tablet actions -->
+                <div class="mobile-actions" aria-hidden="false">
+                    <button type="button" aria-label="محادثة جديدة" onclick="startNewChat()">➕ محادثة جديدة</button>
+                    <button type="button" aria-label="سجل المحادثات" onclick="toggleChatHistory()">📜 سجل
+                        المحادثات</button>
+                    <button type="button" class="delete" aria-label="حذف المحادثة الحالية"
+                        onclick="deleteCurrentChat()">🗑️ حذف</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- overlay for sidebar on mobile/tablet -->
+    <div id="sb-overlay" onclick="closeSidebar()" aria-hidden="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // لم أغير أي كود جافاسكربت — نفس ملفك الأصلي، أضفت وظائف صغيرة للتعامل مع عرض الشريط الجانبي على الموبايل/التابلت
+        const API_KEY = "AIzaSyAWOuDNXPPaMdI8wFWaDUTCKJCesiyFh9I";
+        const API_URL = "http://localhost:3000/chat";
+
+        const STORAGE_KEY = "chatHistory";
+        let chats = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        let currentChatId = null;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            if (chats.length === 0) {
+                createChat("محادثة جديدة");
+            } else { currentChatId = chats[0].id; }
+            renderChatList();
+            loadChat(currentChatId);
+        });
+
+        function saveChats() { localStorage.setItem(STORAGE_KEY, JSON.stringify(chats)); }
+
+        function createChat(title = "محادثة جديدة") {
+            const chat = { id: Date.now(), title: title, messages: [] };
+            chats.unshift(chat); currentChatId = chat.id; saveChats(); renderChatList(); loadChat(currentChatId); return chat;
+        }
+
+        function startNewChat() { createChat("محادثة جديدة"); document.getElementById("user-input").focus(); }
+
+        function renderChatList() {
+            const list = document.getElementById("chat-list"); list.innerHTML = "";
+            chats.forEach(chat => {
+                const item = document.createElement("div");
+                item.className = "chat-item" + (chat.id === currentChatId ? " active" : "");
+                item.title = chat.title || "محادثة";
+                const titleEl = document.createElement("div"); titleEl.className = "title"; titleEl.textContent = chat.title || "محادثة";
+
+                const actions = document.createElement("div"); actions.className = "chat-actions";
+                const openBtn = document.createElement("button"); openBtn.className = "icon-btn"; openBtn.innerHTML = "↪"; openBtn.title = "افتح المحادثة"; openBtn.onclick = (e) => { e.stopPropagation(); loadChat(chat.id); closeSidebar(); };
+                const delBtn = document.createElement("button"); delBtn.className = "icon-btn"; delBtn.innerHTML = "🗑"; delBtn.title = "حذف المحادثة";
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    Swal.fire({
+                        title: 'تأكيد الحذف',
+                        text: 'هل تريد حذف هذه المحادثة نهائيًا؟',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'نعم، احذف',
+                        cancelButtonText: 'إلغاء',
+                        reverseButtons: true,
+                        allowOutsideClick: false
+                    }).then((result) => { if (result.isConfirmed) { deleteChat(chat.id); } });
+                };
+
+                actions.appendChild(openBtn); actions.appendChild(delBtn);
+                item.appendChild(titleEl); item.appendChild(actions);
+                item.onclick = () => { loadChat(chat.id); closeSidebar(); };
+                list.appendChild(item);
+            });
+        }
+
+        function loadChat(id) {
+            if (!id && chats.length > 0) id = chats[0].id;
+            currentChatId = id; renderChatList();
+            const chatBox = document.getElementById("chat-box"); chatBox.innerHTML = "";
+            const chat = chats.find(c => c.id === id); if (!chat) return;
+            document.getElementById("current-title").textContent = chat.title || "محادثة";
+            chat.messages.forEach(m => { appendMessageToDOM(m.text, m.sender, false, m.t); });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendMessageToDOM(text, sender, save = true, timestamp = null) {
+            const chatBox = document.getElementById("chat-box");
+            const msg = document.createElement("div"); msg.className = "message " + sender; msg.textContent = text;
+            chatBox.appendChild(msg);
+
+            if (timestamp) {
+                const meta = document.createElement("div"); meta.className = "meta";
+                meta.textContent = new Date(timestamp).toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+                chatBox.appendChild(meta);
+            }
+
+            if (save) { saveMessage(text, sender); }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function saveMessage(text, sender) {
+            const chat = chats.find(c => c.id === currentChatId); if (!chat) return;
+            const obj = { text: text, sender: sender, t: Date.now() }; chat.messages.push(obj);
+            if ((chat.title === "محادثة جديدة" || !chat.title) && sender === "user") {
+                chat.title = text.trim().slice(0, 40) || "محادثة"; document.getElementById("current-title").textContent = chat.title; renderChatList();
+            }
+            saveChats();
+        }
+
+        function deleteChat(id) {
+            chats = chats.filter(c => c.id !== id);
+            if (chats.length === 0) { createChat("محادثة جديدة"); } else { if (currentChatId === id) currentChatId = chats[0].id; }
+            saveChats(); renderChatList(); loadChat(currentChatId);
+        }
+
+        function deleteCurrentChat() {
+            if (!currentChatId) return;
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                text: 'هل تريد حذف المحادثة الحالية نهائيًا؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                allowOutsideClick: false
+            }).then((result) => { if (result.isConfirmed) { deleteChat(currentChatId); } });
+        }
+
+        function clearAllChats() {
+            Swal.fire({
+                title: 'تأكيد مسح الكل',
+                text: 'سيتم حذف كل المحادثات نهائيًا. هل أنت متأكد؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، امسح الكل',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    chats = []; saveChats(); createChat("محادثة جديدة"); renderChatList(); loadChat(currentChatId);
+                    Swal.fire({ title: 'تم المسح', text: 'تم حذف كل المحادثات.', icon: 'success' });
+                }
+            });
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("user-input"); const message = input.value.trim(); if (!message) return;
+            await appendMessageToDOM(message, "user", true); input.value = ""; input.focus();
+
+            try {
+                const response = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) });
+                const data = await response.json(); const reply = data.reply; appendMessageToDOM(reply, "bot", true);
+            } catch (error) {
+                appendMessageToDOM("حدث خطأ، حاول مرة أخرى.", "bot", true); console.error("Fetch error:", error);
+            }
+        }
+
+        document.getElementById("user-input").addEventListener("keypress", function (e) { if (e.key === "Enter") sendMessage(); });
+        document.querySelector('.send-btn').addEventListener('click', sendMessage);
+
+        /* ====== sidebar toggle for mobile/tablet (new) ====== */
+        function toggleChatHistory() {
+            const sb = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sb-overlay');
+            const isOpen = sb.classList.toggle('open');
+            if (isOpen) {
+                overlay.classList.add('visible');
+                overlay.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.remove('visible');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sb-overlay');
+            sb.classList.remove('open');
+            overlay.classList.remove('visible');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        // close sidebar when resizing desktop (to avoid stuck open state)
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeSidebar();
+            }
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>the Quran written</title>
+
+    <!-- خط عربي مناسب -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!--  fav -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png" />
+
+    <!-- أيقونة لأجهزة أبل -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png" />
+
+    <!-- أيقونة لأندرويد -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png" />
+
+
+
+
+    <!-- nav bar-->
+    <link rel="stylesheet" href="./navbar.css">
+    <style>
+        /* ===========================
+           متغيرات الألوان والمساحات (قابلة للتعديل بسهولة)
+           لا تغيّر الجافاسكربت — التعديلات CSS فقط
+           =========================== */
+        :root {
+            --bg: #fbfbfb;
+            --card: #fff;
+            --text: #111;
+            --muted: #556;
+            --accent: #0a5;
+            --control-border: #eee;
+            --page-padding: 22px;
+            --transition: 220ms ease;
+            --sep-bg: linear-gradient(180deg, #fff9e6, #fffef9);
+
+            /* تحكّم ارتفاع واجهة المستخدم (يمكن تعديله لو احتجت) */
+            --header-block: 140px;
+            /* ارتفاع تقريبي للـ toolbar + statusbar */
+            --swiper-gap: 40px;
+            /* مسافة أفقية/عمودية احتياطية */
+        }
+
+        /* dark theme variables override when applied via data-theme attribute */
+        :root[data-theme="dark"] {
+            --bg: #0b1220;
+            --card: #07111b;
+            --text: #e6f3ea;
+            --muted: #9fb0b0;
+            --accent: #6be39b;
+            --control-border: rgba(255, 255, 255, 0.06);
+            --sep-bg: linear-gradient(180deg, #07111b, #09131a);
+        }
+
+        /* ===========================
+           =========================== */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: "Amiri", serif;
+            background: var(--bg);
+            color: var(--text);
+            direction: rtl;
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        nav {
+            flex-direction: row-reverse;
+        }
+
+        nav ul {
+            flex-direction: row-reverse;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            box-sizing: border-box;
+            gap: 12px;
+        }
+
+        .toolbar {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 6px 4px;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .control {
+            background: var(--card);
+            border: 1px solid var(--control-border);
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: var(--text);
+            transition: background var(--transition), border-color var(--transition), color var(--transition);
+        }
+
+        /* input style */
+        input[type="number"],
+        input[type="search"] {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--control-border);
+            background: transparent;
+            color: var(--text);
+            font-size: 14px;
+            direction: ltr;
+            width: 120px;
+            text-align: center;
+            transition: border-color var(--transition), color var(--transition);
+            outline: none;
+        }
+
+        input[type="number"]:focus,
+        input[type="search"]:focus {
+            border-color: rgba(10, 80, 10, 0.14);
+            box-shadow: 0 4px 18px rgba(10, 80, 10, 0.06);
+        }
+
+        button.btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button.btn:active {
+            transform: translateY(1px);
+        }
+
+        button.ghost {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(10, 80, 10, 0.08);
+            padding: 8px 10px;
+            border-radius: 8px;
+            min-height: 42px;
+        }
+
+        /* Swiper container: احترم ارتفاع الواجهة */
+        .swiper {
+            width: 100%;
+            max-width: 1100px;
+            /* ارتفاع دقيق يحسب نسبة من الارتفاع الكلي مطروحاً منه الواجهة */
+            height: calc(100vh - var(--header-block) - var(--swiper-gap));
+            border-radius: 12px;
+            overflow: hidden;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .swiper-wrapper {
+            height: 100%;
+        }
+
+        .swiper-slide {
+            background: var(--card);
+            border-radius: 10px;
+            padding: var(--page-padding);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            position: relative;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        /* الصفحة — أعمدة ذكية قابلة للتحول */
+        .page {
+            width: 100%;
+            max-width: 920px;
+            margin: 0 auto;
+            column-width: 360px;
+            /* المتصفح يوزع الأعمدة تلقائياً */
+            column-gap: 30px;
+            text-align: right;
+            direction: rtl;
+            line-height: 1.9;
+            font-size: 28px;
+            /* القيم الافتراضية؛ الجافاسكربت سيعدّل هذا عند الضرورة */
+            word-break: break-word;
+            color: var(--text);
+            hyphens: auto;
+            /* اجعل المحتوى قابل للتمرير عمودياً إن زاد عن السلايد */
+            -webkit-column-break-inside: avoid;
+            -moz-column-break-inside: avoid;
+            column-fill: auto;
+        }
+
+        /* كل آية الآن inline أو block حسب العرض */
+        .verse {
+            display: inline;
+            /* سيكون overridden على الشاشات الصغيرة لراحة القراءة */
+            margin: 0 8px 6px 0;
+            padding: 0;
+            background: transparent;
+            white-space: normal;
+            color: inherit;
+        }
+
+        .verse .num {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 16px;
+            color: var(--muted);
+            vertical-align: baseline;
+            font-weight: 700;
+            font-family: "Amiri", serif;
+        }
+
+        .surah-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            background: var(--sep-bg);
+            padding: 26px;
+            border-radius: 8px;
+            color: var(--text);
+        }
+
+        .sep-label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .sep-name {
+            font-size: 40px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        .statusbar {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress {
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        #loading {
+            position: fixed;
+            left: 12px;
+            top: 12px;
+            background: var(--card);
+            padding: 10px 12px;
+            border-radius: 10px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            z-index: 9999;
+            color: var(--text);
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .error {
+            color: #a00;
+            font-weight: 700;
+        }
+
+        /* تحسين أزرار Swiper لتكون أكبر على الأجهزة اللمسية */
+        .swiper-button-next,
+        .swiper-button-prev {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.06);
+            color: #111;
+            --swiper-navigation-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        /* رسالة تحذير تناسب */
+        .fit-warning {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 30;
+        }
+
+        /* ===========================
+           نقاط التوقف (Responsive adjustments)
+           =========================== */
+        @media (max-width: 1200px) {
+            :root {
+                --header-block: 160px;
+                /* ازدياد المساحات الرأسية على الشاشات المتوسطة */
+            }
+
+            nav ul {
+                display: flex;
+                flex-direction: row-reverse;
+                gap: 12px;
+                align-items: center;
+            }
+
+            .swiper {
+                height: calc(100vh - var(--header-block) - var(--swiper-gap));
+            }
+
+            .page {
+                column-width: 300px;
+                font-size: 24px;
+                column-gap: 20px;
+            }
+
+            .sep-name {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            :root {
+                --header-block: 180px;
+            }
+
+            .toolbar {
+                gap: 8px;
+            }
+
+            .swiper {
+                height: calc(100vh - var(--header-block) - 28px);
+                max-width: 980px;
+            }
+
+            .page {
+                column-width: 260px;
+                font-size: 22px;
+                column-gap: 18px;
+            }
+
+            .sep-name {
+                font-size: 32px;
+            }
+
+            /* احرص أن حقول الإدخال أصغر على الموبايل */
+            input[type="number"] {
+                width: 90px;
+                padding: 8px;
+            }
+        }
+
+        /* تحول حاسم: على شاشات صغيرة جداً نفرّغ الأعمدة لصيغة عمود واحد ونجعل الآيات بلوك لسهولة القراءة */
+        @media (max-width: 520px) {
+
+            nav ul {
+                display: none;
+
+                flex-direction: row-reverse;
+                gap: 12px;
+                align-items: center;
+            }
+
+            :root {
+                --header-block: 200px;
+                --swiper-gap: 18px;
+            }
+
+            .swiper {
+                height: calc(100vh - var(--header-block));
+            }
+
+            .page {
+                column-width: unset;
+                column-count: 1;
+                column-gap: 12px;
+                font-size: 18px;
+                line-height: 1.8;
+                padding: 0 6px;
+            }
+
+            /* آية في سطر منفصل لتسهيل القراءة والضغط طويلًا على الكلمة */
+            .verse {
+                display: block;
+                margin: 0 0 10px 0;
+                font-size: inherit;
+            }
+
+            .verse .num {
+                margin-left: 8px;
+                font-size: 14px;
+                color: var(--muted);
+            }
+
+            .toolbar {
+                align-items: flex-start;
+            }
+
+            .control {
+                padding: 6px 8px;
+                gap: 6px;
+            }
+
+            button.btn,
+            button.ghost {
+                min-height: 44px;
+                padding: 10px 12px;
+            }
+
+            input[type="search"] {
+                width: 160px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            :root {
+                --header-block: 220px;
+            }
+
+            .page {
+                font-size: 16px;
+                line-height: 1.7;
+                padding: 0 4px;
+            }
+
+            .sep-name {
+                font-size: 26px;
+            }
+
+            input[type="search"] {
+                width: 120px;
+            }
+
+            input[type="number"] {
+                width: 70px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- start navbar -->
+    <nav>
+        <div class="logo"><img src="./image/logo_resized.png" alt="logo" style="height:40px"></div>
+        <input type="checkbox" id="checkbox">
+        <label for="checkbox" id="icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                style="width:24px;height:24px">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </label>
+        <ul>
+            <li><a href="./index.html">Prayer Time</a></li>
+            <li><a href="./quran.html"> Quran Player</a></li>
+            <li><a href="./write.html " class="active">the Quran written</a></li>
+            <li><a href="./pop.html">Hisn Almuslim</a></li>
+            <li><a href="./chat.html">Chat helper</a></li>
+        </ul>
+    </nav>
+    <!-- end navbar -->
+    <div class="app">
+        <div class="toolbar">
+
+
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <div class="control" role="group" aria-label="اذهب إلى صفحة">
+                    <label class="muted" style="margin-left:8px">اذهب إلى صفحة</label>
+                    <input id="goto-input" type="number" min="1" max="605" placeholder="صفحة" />
+                    <button id="goto-btn" class="btn">اذهب</button>
+                </div>
+
+                <div class="control" role="search" aria-label="بحث">
+                    <input id="search-input" type="search" placeholder="ابحث عن سورة أو كلمة..." />
+                    <button id="search-btn" class="ghost">بحث</button>
+                </div>
+
+                <div class="control" role="group" aria-label="حجم الخط">
+                    <button id="dec-font" title="تصغير">−</button>
+                    <div class="muted" style="min-width:34px;text-align:center">حجم</div>
+                    <button id="inc-font" title="تكبير">+</button>
+                    <button id="reset-font" title="إعادة">⟳</button>
+                </div>
+
+                <div class="control">
+                    <button id="theme-toggle" class="ghost" aria-pressed="false">ثيم</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="statusbar">
+            <div class="progress" id="progress">صفحة 1 / 605</div>
+            <div class="muted" id="current-surah">—</div>
+        </div>
+
+        <div id="loading">جارٍ تحميل المصحف...</div>
+
+        <div class="swiper mySwiper" aria-label="قارئ المصحف">
+            <div class="swiper-wrapper" id="swiper-wrapper"></div>
+            <div class="swiper-button-next" aria-label="التالي"></div>
+            <div class="swiper-button-prev" aria-label="السابق"></div>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- JS لم أغيّره — كل شيء كما أرسلته أنت، مع تعديل بسيط: الوضع الافتراضي صار داكنًا -->
+    <script>
+        (async function () {
+            const API_URL = 'https://api.alquran.cloud/v1/quran/quran-uthmani';
+            const TOTAL_PAGES = 605;
+
+            const loadingEl = document.getElementById('loading');
+            const wrapper = document.getElementById('swiper-wrapper');
+            const progressEl = document.getElementById('progress');
+            const surahEl = document.getElementById('current-surah');
+            const gotoInput = document.getElementById('goto-input');
+            const gotoBtn = document.getElementById('goto-btn');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const incFont = document.getElementById('inc-font');
+            const decFont = document.getElementById('dec-font');
+            const resetFont = document.getElementById('reset-font');
+            const themeToggle = document.getElementById('theme-toggle');
+
+            // cache local
+            const LS_KEY = 'alquran_cached_v1';
+            let cached = null;
+            try { cached = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) { cached = null; }
+
+            let surahs;
+            try {
+                if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 1000 * 60 * 60 * 24 * 7) {
+                    surahs = cached.surahs;
+                } else {
+                    const res = await fetch(API_URL);
+                    if (!res.ok) throw new Error('فشل في جلب المصحف: ' + res.status);
+                    const json = await res.json();
+                    surahs = json.data.surahs;
+                    localStorage.setItem(LS_KEY, JSON.stringify({ timestamp: Date.now(), surahs }));
+                }
+            } catch (err) {
+                loadingEl.innerHTML = 'حدث خطأ أثناء تحميل المصحف: <span class="error">' + (err.message || err) + '</span>';
+                console.error(err);
+                return;
+            }
+
+            // إعداد pagesMap و endPageToNext
+            const pagesMap = {};
+            for (let p = 1; p <= TOTAL_PAGES; p++) pagesMap[p] = [];
+            const endPageToNext = {};
+            for (let i = 0; i < surahs.length; i++) {
+                const surah = surahs[i];
+                const nextSurahName = (i + 1 < surahs.length) ? surahs[i + 1].name : null;
+                let surahEnd = 0;
+                for (const ay of surah.ayahs) {
+                    const p = Number(ay.page);
+                    if (!p || p < 1 || p > TOTAL_PAGES) continue;
+                    pagesMap[p].push({
+                        text: ay.text,
+                        globalNumber: ay.number,
+                        numberInSurah: ay.numberInSurah,
+                        surahNumber: surah.number,
+                        surahName: surah.name
+                    });
+                    if (p > surahEnd) surahEnd = p;
+                }
+                if (surahEnd) {
+                    endPageToNext[surahEnd] = endPageToNext[surahEnd] || [];
+                    endPageToNext[surahEnd].push(nextSurahName ? nextSurahName : null);
+                }
+            }
+
+            // sequence: صفحات ثم فواصل
+            const sequence = [];
+            for (let p = 1; p <= TOTAL_PAGES; p++) {
+                sequence.push({ type: 'page', page: p, ayahs: pagesMap[p] || [] });
+                if (endPageToNext[p] && endPageToNext[p].length) {
+                    for (const nextName of endPageToNext[p]) sequence.push({ type: 'sep', afterPage: p, nextName: nextName || 'نهاية المصحف' });
+                }
+            }
+
+            // إنشاء سلايدات فارغة
+            sequence.forEach((it, idx) => {
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide';
+                slide.dataset.seq = idx;
+                const placeholder = document.createElement('div');
+                placeholder.className = 'placeholder';
+                placeholder.style.width = '100%';
+                placeholder.style.height = '100%';
+                slide.appendChild(placeholder);
+                wrapper.appendChild(slide);
+            });
+
+            // تهيئة swiper
+            const swiper = new Swiper('.mySwiper', {
+                direction: 'horizontal',
+                loop: false,
+                grabCursor: true,
+                keyboard: { enabled: true, onlyInViewport: false },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                speed: 220,
+                pagination: false,
+                observer: true,
+                observeParents: true,
+            });
+
+            // إعداد حجم الخط الافتراضي والتخزين
+            const FONT_KEY = 'alquran_fontsize_v1';
+            let preferredFont = parseInt(localStorage.getItem(FONT_KEY)) || 28;
+            const MIN_FONT = 12;
+            const MAX_FONT = 50;
+
+            // IntersectionObserver لتحميل المحتوى عند الحاجة
+            const options = { root: document.querySelector('.swiper'), rootMargin: '600px', threshold: 0.01 };
+            const observer = new IntersectionObserver(onIntersect, options);
+            document.querySelectorAll('.swiper-slide').forEach(s => observer.observe(s));
+
+            // ملء الشريحة إذا محتواها لم يُملأ
+            function maybePopulateSlide(slideEl) {
+                if (!slideEl) return;
+                if (slideEl.dataset.populated) return;
+                const seq = Number(slideEl.dataset.seq);
+                const item = sequence[seq];
+                if (!item) return;
+
+                let html = '';
+                if (item.type === 'page') {
+                    const ayahs = item.ayahs || [];
+                    if (ayahs.length === 0) {
+                        html = `<div style="width:100%;text-align:center;color:var(--muted);padding:18px">
+                    <div style=\"font-size:18px\">صفحة فارغة</div>
+                    <div style=\"font-size:14px;margin-top:8px\">رقم الصفحة: ${item.page}</div>
+                  </div>`;
+                    } else {
+                        html = `<div class=\"page\" aria-label=\"صفحة ${item.page}\">`;
+                        ayahs.sort((a, b) => a.globalNumber - b.globalNumber);
+                        // الآيات الآن تُدرج كنص متصل: كل آية داخل span.verse بدون خلفية أو حدود.
+                        for (const ay of ayahs) {
+                            const txt = ay.text;
+                            const num = ay.globalNumber;
+                            // نستخدم فراغات وأقواس خاصة للرقم
+                            html += `<span class=\"verse\">${txt}<span class=\"num\">﴿${num}﴾</span></span>`;
+                            // نترك فراغ بسيط بين الآيات (من خلال margin في CSS)
+                        }
+                        html += `</div>`;
+                    }
+                } else {
+                    html = `<div class=\"surah-separator\"><div class=\"sep-label\">السورة التالية</div><div class=\"sep-name\">${escapeHtml(item.nextName)}</div></div>`;
+                }
+
+                slideEl.innerHTML = html;
+                slideEl.dataset.populated = '1';
+
+                // إذا كانت صفحة — طبق حجم الخط المفضل ثم حاول تقليل تلقائي إن لزم
+                if (item.type === 'page') {
+                    const pageEl = slideEl.querySelector('.page');
+                    if (pageEl) {
+                        pageEl.style.fontSize = preferredFont + 'px';
+                        fitContentToSlide(slideEl, pageEl);
+                    }
+                }
+            }
+
+            // دالة تقلل حجم الخط داخل الصفحة حتى تتناسب مع ارتفاع السلايد
+            function fitContentToSlide(slideEl, pageEl) {
+                if (!slideEl || !pageEl) return;
+                const available = slideEl.clientHeight - 10;
+                let fs = parseInt(pageEl.style.fontSize) || preferredFont;
+                let attempts = 0;
+                // سنسمح بمحاولة حتى تصل النص للمساحة المتاحة أو نصل للحد الأدنى
+                while (pageEl.scrollHeight > available && fs > MIN_FONT && attempts < 40) {
+                    fs -= 1;
+                    pageEl.style.fontSize = fs + 'px';
+                    attempts++;
+                }
+                if (pageEl.scrollHeight > available) {
+                    if (!slideEl.querySelector('.fit-warning')) {
+                        const warn = document.createElement('div');
+                        warn.className = 'fit-warning';
+                        warn.textContent = 'المحتوى طويل جداً — قلل حجم الخط أو افتح العرض الكامل';
+                        slideEl.appendChild(warn);
+                    }
+                } else {
+                    const prev = slideEl.querySelector('.fit-warning');
+                    if (prev) prev.remove();
+                }
+            }
+
+            // IntersectionObserver callback
+            function onIntersect(entries) {
+                for (const e of entries) {
+                    if (e.isIntersecting) maybePopulateSlide(e.target);
+                }
+            }
+
+            // حدث تغيير السلايد — حدّث الشريط وحمّل الجيران
+            swiper.on('slideChange', () => {
+                const idx = swiper.activeIndex;
+                updateStatus(idx);
+                [idx - 2, idx - 1, idx, idx + 1, idx + 2].forEach(i => {
+                    const s = document.querySelector(`.swiper-slide[data-seq="${i}"]`);
+                    if (s) maybePopulateSlide(s);
+                });
+            });
+
+            // تحديث شريط الحالة
+            function updateStatus(activeIdx) {
+                let currentPageNum = null;
+                let currentSurahName = '—';
+                for (let delta = 0; delta <= 3; delta++) {
+                    const check = [activeIdx - delta, activeIdx + delta];
+                    for (const ci of check) {
+                        if (ci >= 0 && ci < sequence.length) {
+                            const item = sequence[ci];
+                            if (item && item.type === 'page') {
+                                currentPageNum = item.page;
+                                if (item.ayahs && item.ayahs.length) currentSurahName = item.ayahs[0].surahName || '—';
+                                break;
+                            }
+                        }
+                    }
+                    if (currentPageNum) break;
+                }
+                if (!currentPageNum) {
+                    for (let i = activeIdx; i >= 0; i--) if (sequence[i] && sequence[i].type === 'page') { currentPageNum = sequence[i].page; if (sequence[i].ayahs && sequence[i].ayahs.length) currentSurahName = sequence[i].ayahs[0].surahName; break; }
+                }
+                if (!currentPageNum) currentPageNum = 1;
+                progressEl.textContent = `صفحة ${currentPageNum} / ${TOTAL_PAGES}`;
+                surahEl.textContent = currentSurahName;
+            }
+
+            // أدوات: قفز للصفحة
+            gotoBtn.addEventListener('click', () => {
+                const val = parseInt(gotoInput.value);
+                if (!val || val < 1 || val > TOTAL_PAGES) { alert('أدخل رقم صفحة بين 1 و ' + TOTAL_PAGES); return; }
+                const targetIdx = sequence.findIndex(it => it.type === 'page' && it.page === val);
+                if (targetIdx === -1) { alert('لم نجد الصفحة المطلوبة'); return; }
+                swiper.slideTo(targetIdx, 300);
+            });
+
+            // بحث (سورة أو كلمة)
+            searchBtn.addEventListener('click', () => {
+                const q = (searchInput.value || '').trim();
+                if (!q) { alert('أدخل كلمة أو اسم سورة للبحث'); return; }
+                const bySurah = surahs.find(s => s.name.includes(q) || (s.englishName && s.englishName.toLowerCase().includes(q.toLowerCase())));
+                if (bySurah) {
+                    const firstAy = bySurah.ayahs && bySurah.ayahs[0];
+                    if (firstAy) {
+                        const pg = Number(firstAy.page);
+                        const idx = sequence.findIndex(it => it.type === 'page' && it.page === pg);
+                        if (idx !== -1) { swiper.slideTo(idx, 300); return; }
+                    }
+                }
+                // بحث نصي في الآيات (سريع لأننا نملك pagesMap)
+                let foundIdx = -1;
+                for (let i = 0; i < sequence.length; i++) {
+                    const it = sequence[i];
+                    if (it.type === 'page' && it.ayahs && it.ayahs.some(a => a.text.includes(q))) { foundIdx = i; break; }
+                }
+                if (foundIdx !== -1) { swiper.slideTo(foundIdx, 300); return; }
+                alert('لم نعثر على نتيجة.');
+            });
+
+            // تحكم بحجم الخط
+            incFont.addEventListener('click', () => {
+                preferredFont = Math.min(MAX_FONT, preferredFont + 2);
+                localStorage.setItem(FONT_KEY, preferredFont);
+                refitVisibleSlides();
+            });
+            decFont.addEventListener('click', () => {
+                preferredFont = Math.max(MIN_FONT, preferredFont - 2);
+                localStorage.setItem(FONT_KEY, preferredFont);
+                refitVisibleSlides();
+            });
+            resetFont.addEventListener('click', () => { preferredFont = 28; localStorage.setItem(FONT_KEY, preferredFont); refitVisibleSlides(); });
+
+            function refitVisibleSlides() {
+                const idx = swiper.activeIndex;
+                [idx - 1, idx, idx + 1].forEach(i => {
+                    const s = document.querySelector(`.swiper-slide[data-seq="${i}"]`);
+                    if (s && s.dataset.populated) {
+                        const pageEl = s.querySelector('.page');
+                        if (pageEl) {
+                            pageEl.style.fontSize = preferredFont + 'px';
+                            fitContentToSlide(s, pageEl);
+                        }
+                    }
+                });
+            }
+
+            // ثيم بسيط — تم ترقيته: يحترم تفضيل النظام ويحفظ الإعداد في localStorage
+            const THEME_KEY = 'alquran_theme_v1';
+
+            // دالة تطبيق الثيم (تطبق سمة data-theme="dark" على العنصر الجذري)
+            function applyTheme(isDark) {
+                if (isDark) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.classList.add('active');
+                    themeToggle.textContent = 'داكن';
+                    themeToggle.setAttribute('aria-pressed', 'true');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeToggle.classList.remove('active');
+                    themeToggle.textContent = 'فاتح';
+                    themeToggle.setAttribute('aria-pressed', 'false');
+                }
+                localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+                dark = !!isDark;
+            }
+
+            // حالة افتراضية: افتراضيًا نُجبر الوضع الداكن ما لم يختر المستخدم خلاف ذلك
+            let dark = false;
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'dark' || savedTheme === 'light') {
+                applyTheme(savedTheme === 'dark');
+            } else {
+                // التغيير الأساسي: افتراض الوضع الداكن كقاعدة افتراضية
+                applyTheme(true);
+            }
+
+            // حدث التبديل (يبقي باقي السلوك كما هو)
+            themeToggle.addEventListener('click', () => {
+                applyTheme(!dark);
+            });
+
+            function escapeHtml(str) {
+                if (str == null) return '';
+                return String(str).replace(/[&<>\"']/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+            }
+
+            [swiper.activeIndex - 1, swiper.activeIndex, swiper.activeIndex + 1].forEach(i => {
+                const s = document.querySelector(`.swiper-slide[data-seq="${i}"]`);
+                if (s) maybePopulateSlide(s);
+            });
+            loadingEl.style.display = 'none';
+
+            // مفاتيح الأسهم
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'PageDown' || e.key === 'ArrowRight') { swiper.slideNext(); }
+                else if (e.key === 'PageUp' || e.key === 'ArrowLeft') { swiper.slidePrev(); }
+            });
+
+        })();
+    </script>
+</body>
+
+</html>

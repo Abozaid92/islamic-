@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hisn Almuslim</title>
+    <link rel="stylesheet" href="./navbar.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png" />
+
+    <!-- أيقونة لأجهزة أبل -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png" />
+
+    <!-- أيقونة لأندرويد -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png" />
+
+
+
+    <style>
+        body {
+            position: relative;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(90deg, rgb(15 13 13 / 92%) 0%, rgb(6 4 6 / 82%) 50%, rgb(0 0 0 / 81%) 100%);
+        }
+
+        .container {
+            padding: 0 30px;
+            margin: 50px auto;
+            text-align: right;
+            direction: rtl;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .boxes {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .overlay,
+        .overlay-edit {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .overlay.show,
+        .overlay-edit.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .add {
+            width: 260px;
+            max-height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 17px;
+            border: 8px solid #89919fe8;
+            padding: 13px 30px;
+        }
+
+        h1 {
+            color: #F6F6FD;
+        }
+
+        .toggle {
+            width: 68px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: radial-gradient(#000000, transparent);
+            color: #F6F6F6;
+        }
+
+        .content {
+            width: 260px;
+            max-height: 40vh;
+            border: 8px solid #89919fe8;
+            color: #F6F6F6;
+            padding: 13px 30px;
+            border-radius: 17px;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* العنوان: سطر واحد + ... لو طويل */
+        .titlee {
+            font-size: 22px;
+            margin: 0 0 8px 0;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        /* الوصف: نحتفظ به في سطر واحد، مع تمرير أفقي لو طويل */
+        .describe {
+            font-size: 18px;
+            max-width: 100%;
+            overflow-x: auto;
+            /* تمرير أفقي لو طويل */
+            overflow-y: hidden;
+            white-space: nowrap;
+            /* لا ينزل لسطر جديد */
+            border-bottom: 1px solid #aaa;
+            margin: 0;
+            padding-bottom: 12px;
+            word-break: normal;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* optional: ستايل للـ scrollbar الأفقي داخل الوصف */
+        .describe::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .describe::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+        }
+
+        .foot {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row-reverse;
+            font-size: 20px;
+            position: relative;
+        }
+
+        .pop-up,
+        .pop-up-edit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            color: red;
+            font-size: 1rem;
+            background: linear-gradient(90deg, rgb(15, 13, 13) 0%, rgb(6, 4, 6) 50%, rgb(0, 0, 0) 100%);
+            padding: 0px 30px;
+            border-radius: 12px;
+            z-index: 1000;
+            width: 60vh;
+            height: 70vh;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all 0.4s ease;
+        }
+
+        .activep {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .icon,
+        .icon-edit {
+            color: white;
+        }
+
+        .pop h2 {
+            color: #cdcdcd;
+        }
+
+        .pop .title,
+        .pop .area,
+        .areaEdit {
+            width: 100%;
+            height: 51px;
+            background-color: transparent;
+            border: 2px solid white;
+            color: #F6F6F6;
+            font-size: 30px;
+        }
+
+        .pop .area,
+        .areaEdit {
+            height: 25vh;
+        }
+
+        .thing {
+            color: red;
+            display: none;
+        }
+
+        .btn,
+        .btn-edit {
+            width: 100%;
+            padding: 10px;
+            margin-top: 26px;
+            color: black;
+            font-size: 34px;
+            background-color: #00ffffcf;
+        }
+
+        .more {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .box {
+            position: relative;
+            overflow: visible;
+        }
+
+        .mo {
+            color: white;
+            background: linear-gradient(180deg, #1e90ff, #0075ff);
+            padding: 6px 8px;
+            margin: 4px 0;
+            position: absolute;
+            right: 8px;
+            min-width: 76px;
+            text-align: center;
+            border-radius: 10px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+            font-size: 14px;
+            z-index: 12;
+        }
+
+        .mo.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .mo.edit {
+            top: 8px;
+        }
+
+        .mo.del {
+            top: 44px;
+        }
+
+        @media (max-width: 1024px) {
+            .boxes {
+                justify-content: center;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+
+            .pop-up,
+            .pop-up-edit {
+                font-size: 1rem;
+                width: 37vh;
+                height: 70vh;
+
+            }
+
+            .more {
+                display: flex;
+                margin: 10px;
+                padding: 0px;
+                background-color: transparent;
+                justify-content: flex-end;
+                width: fit-content;
+                z-index: 1;
+            }
+
+            .more li {
+                padding: 10px;
+            }
+
+        }
+
+        @media (max-width: 579px) {
+
+            .pop-up,
+            .pop-up-edit {
+                font-size: 1rem;
+                width: 37vh;
+                height: 90vh;
+
+            }
+
+            .more {
+                display: flex;
+                margin: 10px;
+                padding: 0px;
+                background-color: transparent;
+                justify-content: flex-end;
+                width: fit-content;
+                z-index: 1;
+            }
+
+            .more li {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- start nav -->
+
+    <nav>
+        <div class="logo"><img src="./image/logo_resized.png" alt=""></div>
+        <input type="checkbox" id="checkbox">
+        <label for="checkbox" id="icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </label>
+        <ul>
+            <li><a href="./index.html">Prayer Time</a></li>
+            <li><a href="./quran.html"> Quran Player</a></li>
+            <li><a href="./write.html">the Quran written</a></li>
+            <li><a href="./pop.html" class="active">Hisn Almuslim</a></li>
+            <li><a href="./chat.html">Chat helper</a></li>
+        </ul>
+    </nav>
+
+    <!-- end nav -->
+    <div class="overlay" id="overlay"></div>
+    <div class="overlay-edit" id="overlay-edit"></div>
+    <div class="container">
+        <div class="boxes">
+            <div class="box add">
+                <div class="toggle">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <h1>اضف ذكر</h1>
+            </div>
+
+            <!-- الامثلة تبقي هنا -->
+        </div>
+    </div>
+
+    <div class="pop-up">
+        <div class="head">
+            <p class="icon"> <i class="fa-solid fa-xmark"></i></p>
+            <h1 class="pop-title"> اضف ذكر جديد </h1>
+        </div>
+        <div class="pop">
+            <div class="top">
+                <h2>العنوان</h2>
+                <input type="text" class="title textTitle" />
+                <span class="thing">يرجي كتابه اي شيء هنا</span>
+            </div>
+            <div class="bottom">
+                <h2>الوصف</h2>
+                <textarea class="area"></textarea>
+                <span class="thing">يرجي كتابه اي شيء هنا</span>
+
+                <button class="btn">اضف</button>
+            </div>
+        </div>
+    </div>
+    <div class="pop-up-edit">
+        <div class="head">
+            <p class="icon-edit"> <i class="fa-solid fa-xmark"></i></p>
+            <h1 class="pop-title">تعديل </h1>
+        </div>
+        <div class="pop">
+            <div class="top">
+                <h2>العنوان</h2>
+                <input type="text" class="title textTitleEdit" />
+            </div>
+            <div class="bottom">
+                <h2>الوصف</h2>
+                <textarea class="areaEdit"></textarea>
+                <button class="btn-edit">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let overlay = document.querySelector(".overlay")
+        let overlay_edit = document.querySelector(".overlay-edit")
+        let toggle = document.querySelector(".add")
+        let boxes = document.querySelector(".boxes")
+        let pop_up = document.querySelector(".pop-up")
+        let pop_up_edit = document.querySelector(".pop-up-edit")
+        let icon = document.querySelector(".icon")
+        let icon_edit = document.querySelector(".icon-edit")
+        let btn = document.querySelector(".btn")
+        let btnEdit = document.querySelector(".btn-edit")
+        let inputTitle = document.querySelector(".textTitle");
+        let inputTitleEdit = document.querySelector(".textTitleEdit");
+        let inputArea = document.querySelector(".area");
+        let inputAreaEdit = document.querySelector(".areaEdit");
+
+        let aud = new Audio()
+        function audio() {
+            aud.src = "./audios/suc.mp3"
+            aud.play().catch(() => { })
+        }
+
+        function show() { overlay.classList.add("show"); pop_up.classList.add("activep"); }
+        function showEdit() { overlay_edit.classList.add("show"); pop_up_edit.classList.add("activep"); }
+        function hideEdit() { overlay_edit.classList.remove("show"); pop_up_edit.classList.remove("activep"); }
+        function hide() { overlay.classList.remove("show"); pop_up.classList.remove("activep"); }
+
+
+        toggle.addEventListener("click", (e) => { show(); e.stopPropagation() });
+        icon.addEventListener("click", (e) => { hide(); e.stopPropagation() });
+        icon_edit.addEventListener("click", (e) => { hideEdit(); e.stopPropagation() });
+
+        document.addEventListener("click", (e) => {
+            if (!pop_up.contains(e.target) && (!toggle.contains(e.target))) hide()
+            if (!pop_up_edit.contains(e.target) && !e.target.closest('.mo')) hideEdit()
+        });
+
+        const STORAGE_KEY = "boxo";
+        function readStorage() {
+            let arr = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            if (!Array.isArray(arr)) arr = [];
+            return arr;
+        }
+        function writeStorage(arr) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+        }
+
+        function escapeHtml(text) {
+            if (!text && text !== 0) return "";
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function createBoxElement(item) {
+            const box = document.createElement("div");
+            box.classList.add("box", "content");
+            box.dataset.id = item.id;
+            box.innerHTML = `
+        <h1 class="titlee">${escapeHtml(item.title)}</h1>
+        <p class="describe">${escapeHtml(item.desc)}</p>
+        <div class="foot">
+          <ul class="more"><li>.</li><li>.</li><li>.</li></ul>
+          <div class="handler">
+            <div class="mo edit">تعديل <i class="fa-solid fa-pen"></i></div>
+            <div class="mo del">حذف <i class="fa-solid fa-trash"></i></div>
+          </div>
+          <div class="data"><p>${item.date}</p></div>
+        </div>`;
+            boxes.appendChild(box);
+        }
+
+        function loadItems() {
+            // قبل التحميل نفضي الصناديق الحالية لتفادي التكرار لو تم استدعاء الدالة مرة ثانية
+            boxes.querySelectorAll('.box.content:not(.add)').forEach(el => el.remove());
+
+            let arr = readStorage();
+            arr.forEach(item => createBoxElement(item));
+        }
+        window.addEventListener("DOMContentLoaded", loadItems);
+
+        function inner() {
+            const now = new Date();
+            const dateStr = `${now.getFullYear()} ${now.toLocaleString('default', { month: 'short' })}`;
+            const item = {
+                id: Date.now().toString(),
+                title: inputTitle.value.trim(),
+                desc: inputArea.value.trim(),
+                date: dateStr
+            };
+            inputTitle.value = ""; inputArea.value = "";
+            return item;
+        }
+
+        function saveitem(item) {
+            let arr = readStorage();
+            const foundIndex = arr.findIndex(x => x.id === item.id);
+            if (foundIndex > -1) arr[foundIndex] = item;
+            else arr.push(item);
+            writeStorage(arr);
+        }
+
+        inputTitle.addEventListener("keydown", (e) => { if (e.key === "Enter") inputArea.focus() });
+        inputArea.addEventListener("keydown", (e) => { if (e.key === "Enter") btn.click() });
+
+        btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (inputTitle.value.trim().length > 1 && inputArea.value.trim().length > 1) {
+                audio();
+                const item = inner();
+                saveitem(item);
+                createBoxElement(item);
+                hide();
+            } else {
+                document.querySelectorAll(".thing").forEach(el => el.style.display = "block");
+            }
+        });
+
+        // --- التعامل مع الأزرار (تعديل/حذف) ---
+        document.addEventListener('click', function (e) {
+            const more = e.target.closest('.more');
+            if (more) {
+                const box = more.closest('.box');
+                if (!box) return;
+                const mos = box.querySelectorAll('.mo');
+                mos.forEach(m => m.classList.toggle('show'));
+                e.stopPropagation();
+                return;
+            }
+
+            const editBtn = e.target.closest('.mo.edit');
+            if (editBtn) {
+                e.stopPropagation();
+                const boxElem = editBtn.closest('.box');
+                const id = boxElem.dataset.id;
+                let arr = readStorage();
+                const item = arr.find(it => it.id === id);
+                if (!item) return;
+                inputTitleEdit.value = item.title;
+                inputAreaEdit.value = item.desc;
+                showEdit();
+                btnEdit.onclick = function (ev) {
+                    ev.stopPropagation();
+                    if (inputTitleEdit.value.trim() && inputAreaEdit.value.trim()) {
+                        const updated = { ...item, title: inputTitleEdit.value.trim(), desc: inputAreaEdit.value.trim() };
+                        let arr2 = readStorage();
+                        const idx = arr2.findIndex(x => x.id === id);
+                        if (idx > -1) arr2[idx] = updated;
+                        writeStorage(arr2);
+                        const titleEl = boxElem.querySelector('.titlee');
+                        const descEl = boxElem.querySelector('.describe');
+                        if (titleEl) titleEl.textContent = updated.title;
+                        if (descEl) descEl.textContent = updated.desc;
+                        audio();
+                        hideEdit();
+                    }
+                }
+            }
+
+            const delBtn = e.target.closest('.mo.del');
+            if (delBtn) {
+                e.stopPropagation();
+                const boxElem = delBtn.closest('.box');
+                const id = boxElem.dataset.id;
+                let arr = readStorage();
+                arr = arr.filter(it => it.id !== id);
+                writeStorage(arr);
+                boxElem.remove();
+            }
+
+            if (!e.target.closest('.mo')) {
+                document.querySelectorAll('.mo.show').forEach(m => m.classList.remove('show'));
+            }
+        });
+    </script>
+</body>
+
+</html>

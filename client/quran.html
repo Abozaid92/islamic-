@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./quran.css">
+	<title>Quran Player</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+	<!-- start fav -->
+	<link rel="icon" type="image/png" sizes="32x32" href="./image/favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="./image/favicon-16x16.png" />
+
+	<!-- أيقونة لأجهزة أبل -->
+	<link rel="apple-touch-icon" sizes="180x180" href="./image/apple-touch-icon.png" />
+
+	<!-- أيقونة لأندرويد -->
+	<link rel="icon" type="image/png" sizes="192x192" href="./image/android-chrome-192x192.png" />
+	<link rel="icon" type="image/png" sizes="512x512" href="./image/android-chrome-512x512.png" />
+
+	<!-- end fav -->
+
+
+	<link rel="stylesheet" href="./navbar.css">
+</head>
+
+<body>
+	<!-- start nav -->
+	<nav>
+		<div class="logo"><img src="./image/logo_resized.png" alt=""></div>
+		<input type="checkbox" id="checkbox">
+		<label for="checkbox" id="icon">
+			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+				</path>
+			</svg>
+		</label>
+		<ul>
+			<li><a href="./index.html">Prayer Time</a></li>
+			<li><a href="./quran.html" class="active"> Quran Player</a></li>
+			<li><a href="./write.html">the Quran written</a></li>
+			<li><a href="./pop.html">Hisn Almuslim</a></li>
+			<li><a href="./chat.html">Chat helper</a></li>
+		</ul>
+	</nav>
+	<!-- end nav -->
+
+
+	<!-- <div class="container"> -->
+	<div class="palyer"></div>
+	<button class="btn"></button>
+	<!-- <div class="surahs"></div> -->
+	<!-- </div> -->
+
+
+
+
+
+
+	<div class="container">
+		<main>
+
+			<div class="content">
+				<div class="slider-playlist">
+					<div class="swiper">
+						<div class="swiper-wrapper">
+							<div class="swiper-slide">
+								<img src="./image/minshawi.jpg" />
+								<h1>المنشاوي</h1>
+							</div>
+							<div class="swiper-slide">
+								<img src="./image/morattal.jpg" />
+								<h1>المنشاوي</h1>
+							</div>
+							<div class="swiper-slide">
+								<img src="./image/alhusery.jfif" />
+								<h1>الحصري</h1>
+							</div>
+							<div class="swiper-slide">
+								<img src="./image/abdelbaset.jfif" />
+								<h1>عبد الباسط </h1>
+							</div>
+							<div class="swiper-slide">
+								<img src="./image/aldosery.jfif" />
+								<h1>الدوسري</h1>
+							</div>
+							<div class="swiper-slide">
+								<img src="./image/moshary.jpg" />
+								<h1> مشاري بن راشد</h1>
+							</div>
+						</div>
+					</div>
+
+					<div class="playlist">
+						<div class="playlist-item" index="0">
+							<img src="./image/minshawi.jpg" alt="" />
+							<div class="song">
+								<p>المنشاوي</p>
+								<p>المصحف المجود</p>
+							</div>
+							<i class="fa-solid fa-heart like-btn"></i>
+						</div>
+						<div class="playlist-item" index="1">
+							<img src="./image/morattal.jpg" alt="" />
+							<div class="song">
+								<p>المنشاوي</p>
+								<p> المصحف المرتل </p>
+							</div>
+							<i class="fa-regular fa-heart like-btn"></i>
+						</div>
+						<div class="playlist-item " index="2">
+							<img src="./image/alhusery.jfif" alt="" />
+							<div class="song">
+								<p>الحصري</p>
+								<p>المصحف المرتل</p>
+							</div>
+							<i class="fa-regular fa-heart like-btn"></i>
+						</div>
+						<div class="playlist-item" index="3">
+							<img src="./image/abdelbaset.jfif" alt="" />
+							<div class="song">
+								<p>عبد الباسط</p>
+								<p>المصحف المجود</p>
+							</div>
+							<i class="fa-regular fa-heart like-btn"></i>
+						</div>
+						<div class="playlist-item" index="4">
+							<img src="./image/aldosery.jfif" alt="" />
+							<div class="song">
+								<p>الدوسري</p>
+								<p>المصحف المرتل</p>
+							</div>
+							<i class="fa-regular fa-heart like-btn"></i>
+						</div>
+						<div class="playlist-item" index="5">
+							<img src="./image/moshary.jpg" alt="" />
+							<div class="song">
+								<p>مشاري بن راشد</p>
+								<p>المصحف المرتل</p>
+							</div>
+							<i class="fa-regular fa-heart like-btn"></i>
+						</div>
+					</div>
+				</div>
+
+				<div class="player">
+					<audio id="audioPlayer" src="song-list/AfricanFella-CumbiaDeli.mp3" type="audio/mpeg"></audio>
+
+					<div class="controls">
+						<i class="fa-solid fa-shuffle" id="shuffleBtn"></i>
+						<i class="fa-solid fa-backward" id="prevBtn"></i>
+						<button id="playPauseBtn">
+							<i class="fa-solid fa-play" id="playPauseIcon"></i>
+						</button>
+						<i class="fa-solid fa-forward" id="nextBtn"></i>
+						<div class="volume">
+							<i class="fa-solid fa-volume-high"></i>
+							<input type="range" id="volume-range" min="0" max="100" value="50" />
+						</div>
+					</div>
+
+					<input type="range" value="0" id="progress-bar" step="1" />
+					<div class="durate">
+						<div class="cur"> 0 </div>
+						<span> / </span>
+						<div class="total"> 0 </div>
+					</div>
+				</div>
+			</div>
+
+
+		</main>
+
+
+
+		<div class="section">
+			<div class="surahs"></div>
+		</div>
+	</div>
+
+
+
+
+
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+<script src="./quran.js" defer>
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<!-- /*  start audio play puse */ -->
+
+<!-- /*  end audio play puse */ -->
+
+
+
+
+
+</html>
