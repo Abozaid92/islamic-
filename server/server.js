@@ -57,7 +57,7 @@ app.post("/chat", async (req, res) => {
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 // استمع على كل الواجهات — مهم لو تستخدم Docker/WSL
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, () => {
   console.log(`✅ Server running on http://0.0.0.0:${PORT} (process.env.API_KEY ${process.env.API_KEY ? "set" : "NOT set"})`);
 });
 
