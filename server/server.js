@@ -85,7 +85,7 @@ app.post("/chat", async (req, res) => {
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 // مهم: استمع على 0.0.0.0 علشان السيرفر يقبل اتصالات من داخل الحاوية ومن الشبكة
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT} (API_KEY ${process.env.API_KEY ? "set" : "NOT set"})`);
 });
 
