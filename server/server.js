@@ -83,7 +83,7 @@ app.post("/chat", async (req, res) => {
 
 // PORT قابل للتغيير عبر ENV. Railway / Render / Railway يمرر PORT تلقائياً.
 const PORT = Number(process.env.PORT || 8080);
-
+ 
 // مهم: استمع على 0.0.0.0 علشان السيرفر يقبل اتصالات من داخل الحاوية ومن الشبكة
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT} (API_KEY ${process.env.API_KEY ? "set" : "NOT set"})`);
