@@ -7,9 +7,17 @@ dotenv.config();
 
 const app = express();
 
-// إعدادات بسيطة للـ CORS — خليها محددة لو عندك دومين فرونتند
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "*";
-app.use(cors({ origin: FRONTEND_ORIGIN }));
+app.use(
+  cors({
+    origin: [
+      "https://islamic-c0l2bwfe7-abozaid92s-projects.vercel.app",
+      "http://localhost:5173",
+      "http://127.0.0.1:5173"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
